@@ -1,0 +1,5 @@
+type transcribe @model {
+  id: ID!
+  status: String!
+  output: String
+}
