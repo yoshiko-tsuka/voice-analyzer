@@ -3,7 +3,7 @@
     <v-col cols="12" sm="8" md="6">
      <amplify-authenticator>
      <div class="text-center mb-8">
-        <h1>Voice Recorder</h1>
+        <h1>Transcribe Your Voice</h1>
         <v-btn
           color="error"
           :loading="loading"
@@ -119,9 +119,10 @@ export default {
         variables: { id: id }
       })
       .then(async (result) => {
-        if(result.data.getTranscribe){
-          this.result = result.data.getTranscribe.output
+        if(result?.data?.getTranscribe){
           this.resultStatus = result.data.getTranscribe.status
+          const output = JSON.parse(result.data.getTranscribe.output)
+          this.result = output.results
           this.active = false;
           clearInterval(this.timer);
           this.loading = false
