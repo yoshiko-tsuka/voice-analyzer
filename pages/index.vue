@@ -179,7 +179,7 @@
           </v-col>
           <v-col cols="12">
             <v-card>
-              <v-subheader>Yesterdae</v-subheader>
+              <v-subheader>Yesterday</v-subheader>
 
               <v-list two-line>
                   <v-list-item>
