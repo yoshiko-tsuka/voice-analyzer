@@ -100,6 +100,7 @@
                 テキスト解析
               </div>
               <v-textarea
+                class="analysis"
                 solo
                 :value="result.transcripts[0].transcript"
                 name="input-7-4"
@@ -111,6 +112,7 @@
                 時系列解析
               </div>
               <v-textarea
+                class="analysis"
                 solo
                 :value="JSON.stringify(result.items)"
                 name="input-7-4"
@@ -379,3 +381,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.analysis {
+  max-width: 700px;
+}
+</style>
