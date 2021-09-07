@@ -88,36 +88,80 @@
                   Stop
                 </v-btn>
               </v-card-actions>
+              <v-card-subtitle v-if="result" class="red--text text--lighten-1">
+                  {{resultStatus}}
+              </v-card-subtitle>
           </v-card>
         </v-col>
         <v-col cols="12" v-if="result">
           <v-card>
-            <v-card-subtitle class="red--text text--lighten-1">
-                {{resultStatus}}
-            </v-card-subtitle>
+            <v-card-title>
+              評価
+            </v-card-title>
+            <v-list>
+              <v-list-item>
+                <v-list-item-avatar color="grey darken-1">
+                  <v-avatar
+                  :color="resultFillers.length < 3 ? 'orange' : 'teal'"
+                  size="48"
+                >
+                  <span class="white--text text-h5">{{100 - resultFillers.length * 5}}</span>
+                </v-avatar>
+                </v-list-item-avatar>
+
+                <v-list-item-content>
+                  <v-list-item-title class="red--text">{{resultFillers.length === 0 ? 'フィラーのない素晴らしいスピーキングです' : '下記のようなフィラーを減らしてみましょう'}}</v-list-item-title>
+                  <v-list-item-subtitle v-if="resultFillers.length !== 0">
+                    {{resultFillers}}
+                  </v-list-item-subtitle>
+                  <v-rating
+                    v-model="resultRating"
+                    background-color="orange lighten-3"
+                    color="orange"
+                    large
+                  ></v-rating>
+                </v-list-item-content>
+              </v-list-item>
+            </v-list>
+            <v-divider class="mx-4"></v-divider>
+            <v-card-title>
+              テキスト解析
+            </v-card-title>
             <v-card-text>
-              <div class="my-4 text-subtitle-1">
-                テキスト解析
+              <div>
+                {{result.transcripts[0].transcript}}
               </div>
-              <v-textarea
-                class="analysis"
-                solo
-                :value="result.transcripts[0].transcript"
-                name="input-7-4"
-                label="Solo textarea"
-              ></v-textarea>
             </v-card-text>
             <v-card-text>
-              <div class="my-4 text-subtitle-1">
-                時系列解析
+              <div>
+                <v-chip v-for="item in resultItems" :key="item" class="mr-2">
+                  {{item}}
+                </v-chip>
               </div>
-              <v-textarea
-                class="analysis"
-                solo
-                :value="JSON.stringify(result.items)"
-                name="input-7-4"
-                label="Solo textarea"
-              ></v-textarea>
+            </v-card-text>
+            <v-divider class="mx-4"></v-divider>
+            <v-card-title>
+              時系列解析
+            </v-card-title>
+            <v-card-text>
+              <v-timeline
+                align-top
+                dense
+              >
+                <v-timeline-item
+                  v-for="item in result.items"
+                  :key="item.start_time"
+                  :color="item.alternatives[0].confidence > 0.9 ? 'green' : 'orange'"
+                  small
+                >
+                  <div>
+                    <div class="font-weight-normal">
+                      <strong>confidence {{ item.alternatives[0].confidence }}</strong> @{{ item.start_time }}sec ~ {{ item.end_time }}sec
+                    </div>
+                    <div>{{ item.alternatives[0].content }}</div>
+                  </div>
+                </v-timeline-item>
+              </v-timeline>
             </v-card-text>
           </v-card>
         </v-col>     
@@ -323,6 +367,40 @@ export default {
         });
         this.status = 'ready';
     });
+  },
+  computed: {
+    resultItems() {
+      if (this.result.items) {
+        return this.result.items.map(v => v.alternatives[0].content)
+      } else {
+        return ''
+      }
+    },
+    resultFillers () {
+      const fillerRe = /えっと|えっ|あの|えー|ほら|えーと|うーん/
+      if (this.result.transcripts[0].transcript && this.result.transcripts[0].transcript.match(fillerRe)) {
+        return this.result.transcripts[0].transcript.match(fillerRe)
+      } else {
+        return []
+      }
+    },
+    resultRating() {
+      let rate = 0
+      if (this.result.transcripts[0].transcript) {
+        if(this.resultFillers.length === 0){
+          rate = 5
+        } else if (this.resultFillers.length < 2) {
+          rate = 4
+        } else if (this.resultFillers.length < 4) {
+          rate = 3
+        } else if (this.resultFillers.length < 6) {
+          rate = 2
+        } else if (this.resultFillers.length < 8) {
+          rate = 1
+        }
+      }
+      return rate
+    }
   },
   methods: {
     count: function() {
