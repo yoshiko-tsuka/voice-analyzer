@@ -16,7 +16,7 @@
             <v-list-item link>
               <v-list-item-content>
                 <v-list-item-title class="text-h6">
-                  チーム亀田
+                  チームポテト
                 </v-list-item-title>
                 <v-list-item-subtitle>xxxx@gmail.com</v-list-item-subtitle>
               </v-list-item-content>
